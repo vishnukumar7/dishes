@@ -1,52 +1,38 @@
 package com.app.dishes;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
+import com.app.dishes.databinding.ActivityDetailBinding;
 import com.app.dishes.databinding.ActivityMainBinding;
 import com.app.dishes.model.DishesResponse;
-import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity {
     ApiInterface apiInterface;
-    ActivityMainBinding binding;
     DishesImageAdapter adapter;
-
+    ActivityDetailBinding binding;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding= DataBindingUtil.setContentView(this,R.layout.activity_detail);
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
         adapter = new DishesImageAdapter(this, new ArrayList<>());
         binding.viewPager.setAdapter(adapter);
-        getData();
-        binding.itemTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        getData(getIntent().getStringExtra("item_id"));
     }
 
-    private void getData() {
-        Call<DishesResponse> call = apiInterface.getDishesList();
+    private void getData(String item_id) {
+        Call<DishesResponse> call = apiInterface.getDishesItem(item_id);
         call.enqueue(new Callback<DishesResponse>() {
             @Override
             public void onResponse(@NonNull Call<DishesResponse> call, @NonNull Response<DishesResponse> response) {
